@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\classes;
-use App\Models\specializations;
 use App\Models\User;
+use App\Models\classes;
+use App\Models\members;
 use App\Models\trainers;
+use App\Models\memberships;
 use Illuminate\Http\Request;
+use App\Models\specializations;
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
@@ -18,7 +20,7 @@ class AdminController extends Controller
     }
 
     public function shipsIndex(){
-        return view('admin.memberships.index');
+        return view('admin.memberships.index', compact('memberships'));
     }
 
 
@@ -76,6 +78,22 @@ class AdminController extends Controller
 
 
     public function membersIndex(){
-        return view('admin.members.index');
+        $memberships = memberships::all();
+        return view('admin.members.index', compact('memberships'));
+    }
+
+    public function membersStore(Request $req){
+        $member = new members();
+        $member->first_name = $req->first_name;
+        $member->last_name = $req->last_name;
+        $member->phone = $req->phone;
+        $member->email = $req->email;
+        $member->address = $req->address;
+        $member->membership_id = $req->membership_id;
+        $member->joining_date = $req->joining_date;
+        $member->expiry_date = $req->expiry_date;
+        $member->save();
+
+        return redirect()->route('members-index')->with('success', "Member Registered");
     }
 }

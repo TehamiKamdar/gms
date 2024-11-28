@@ -41,6 +41,7 @@ Route::prefix('admin')->group(function(){
 
     Route::prefix('members')->group(function(){
         Route::get('', [AdminController::class , 'membersIndex'])->name('members-index');
+        Route::post('', [AdminController::class , 'membersStore'])->name('members-store');
     });
 
 });
