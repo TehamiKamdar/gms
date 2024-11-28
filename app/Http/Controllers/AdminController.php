@@ -20,7 +20,7 @@ class AdminController extends Controller
     }
 
     public function shipsIndex(){
-        return view('admin.memberships.index', compact('memberships'));
+        return view('admin.memberships.index');
     }
 
 
