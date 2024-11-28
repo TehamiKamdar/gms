@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->on('id')->references('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('user_id')->on('users')->references('id')->onDelete('cascade')->onUpdate('cascade');
             $table->integer('amount');
             $table->date('payment_date');
             $table->string('method');

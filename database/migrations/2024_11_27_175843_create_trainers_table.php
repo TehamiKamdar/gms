@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('trainers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('specialization');
+            $table->unsignedBigInteger('specialization_id');
+            $table->foreign('specialization_id')->references('id')->on('specializations')->onDelete('cascade')->onUpdate('cascade');
             $table->string('phone');
             $table->string('email');
             $table->string('salary');

@@ -13,12 +13,16 @@ return new class extends Migration
     {
         Schema::create('classes', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->unsignedBigInteger('specialization_id');
+            $table->foreign('specialization_id')->references('id')->on('specializations')->onDelete('cascade')->onUpdate('cascade');
             $table->unsignedBigInteger('trainerId');
-            $table->foreign('trainerId')->on('id')->references('trainers')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('trainerId')->on('trainers')->references('id')->onDelete('cascade')->onUpdate('cascade');
             $table->string('days');
-            $table->time('time');
-            $table->string('capacity');
+            $table->string('start_date');
+            $table->string('end_date');
+            $table->integer('fees');
+            $table->string('time');
+            $table->integer('capacity');
             $table->timestamps();
         });
     }
