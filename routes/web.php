@@ -48,6 +48,8 @@ Route::prefix('admin')->group(function(){
 
     Route::prefix('payments')->group(function(){
         Route::get('', [AdminController::class , 'paymentIndex'])->name('payment-index');
+        Route::get('details/{id}', [AdminController::class , 'paymentDetails'])->name('payment-details');
+        Route::post('update/payment/{id}', [AdminController::class , 'updatePayment'])->name('update-payment');
     });
 
 });

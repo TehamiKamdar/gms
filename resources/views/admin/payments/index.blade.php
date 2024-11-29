@@ -14,6 +14,7 @@
                     <th scope="col">Paid Amount</th>
                     <th scope="col">Pending Amount</th>
                     <th scope="col">Last Paid</th>
+                    <th scope="col">Details</th>
                 </tr>
             </thead>
             <tbody>
@@ -23,8 +24,9 @@
                             <td>{{$p->first_name." ".$p->last_name}}</td>
                             <td>{{$p->total_amount}}</td>
                             <td>{{$p->paid_amount}}</td>
-                            <td>{{$p->pending_amount ?? 'No Data Available'}}</td>
+                            <td>{{$p->total_amount - $p->paid_amount}}</td>
                             <td>{{$p->payment_date ?? 'No Data Available'}}</td>
+                            <td><a href="{{route('payment-details', $p->id)}}" class="btn btn-outline-secondary">Details</a></td>
                         </tr>
                     @endforeach
                 @else

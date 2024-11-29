@@ -19,9 +19,9 @@ return new class extends Migration
             $table->foreign('membership_id')->on('memberships')->references('id')->onDelete('cascade')->onUpdate('cascade');
             $table->integer('total_amount')->nullable();
             $table->integer('paid_amount')->nullable();
-            $table->integer('pending_amount')->nullable();
             $table->date('payment_date')->nullable();
             $table->string('method')->nullable();
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }

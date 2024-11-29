@@ -66,7 +66,8 @@ class AdminController extends Controller
         $member->email = $req->email;
         $member->address = $req->address;
         $member->membership_id = $req->membership_id;
-        $member->joining_date = $req->joining_date;
+        $member->joining_date = $req->start_date;
+        $member->expiry_date = $req->end_date;
         $member->save();
 
         $membership=memberships::find($req->membership_id);
@@ -149,6 +150,55 @@ class AdminController extends Controller
             ->get();
         return view('admin.payments.index', compact('payments'));
     }
+
+    public function paymentDetails($id){
+        $details = payments::join('members', 'members.id', '=', 'payments.member_id')
+        ->join('memberships', 'memberships.id', '=', 'payments.membership_id')
+        ->select('payments.*', 'members.*', 'memberships.*', 'members.id as member_id', 'payments.status as payment_status')
+        ->where('members.id', '=', $id)
+        ->first();
+
+        return view('admin.payments.details', compact('details'));
+    }
+
+
+    public function updatePayment(Request $request, $id)
+    {
+        // Fetch the payment record
+        $pay = payments::where('member_id', '=', $id)->first();
+
+        if (!$pay) {
+            return redirect()->back()->with('error', 'Payment record not found.');
+        }
+
+        // Update payment details
+        $pay->paid_amount = $request->amount;
+        $pay->method = $request->paymentMode;
+        $pay->payment_date = now();
+
+        // Update payment status based on total amount
+        if ($pay->total_amount == $request->amount) {
+            $pay->status = 'cleared';
+
+            // Update member status in the members table
+            $member = members::find($id);
+            if ($member) {
+                $member->status = 'active';
+                // $member->activated_on = now();
+
+                // Calculate membership expiry based on membership type
+                // $duration = $member->membership->duration ?? 30; // Default to 30 days if duration not set
+                // $member->membership_expiry = now()->addDays($duration);
+
+                $member->save();
+            }
+        }
+
+        $pay->save();
+
+        return redirect()->route('payment-details', $id)->with('success', 'Payment Received');
+    }
+
 
 
 }
