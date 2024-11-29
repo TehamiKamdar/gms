@@ -5,10 +5,20 @@
 @section('main-section')
     @if (session('success'))
         <div class="alert alert-success">
-            {{session('success')}}
+            {{ session('success') }}
         </div>
     @endif
-<!-- Button trigger modal -->
+    @if (session('active'))
+        <div class="alert alert-success">
+            {{ session('active') }}
+        </div>
+    @endif
+    @if (session('inactive'))
+        <div class="alert alert-danger">
+            {{ session('inactive') }}
+        </div>
+    @endif
+    <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
         Add New @yield('title')
     </button>
@@ -25,35 +35,39 @@
             </div>
         </div>
     </div>
+    <div class="table-responsive mt-3 ">
+        <table class="table table-primary text-center">
+            <thead>
+                <tr>
+                    <th scope="col">Type</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Duration (in days)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($memberships as $m)
+                <tr class="">
+                    <td>{{$m->type}}</td>
+                    <td>{{$m->price}}</td>
+                    <td>{{$m->duration}}</td>
+                    <td>
+                        @if ($m->status == 'active')
+                        <form action="{{route('membership-inactive', $m->id)}}" method="post">
+                            @csrf
+                            <button class="btn btn-danger mx-1">Inactive</button>
+                        </form>
+                        @else
+                        <form action="{{route('membership-active', $m->id)}}" method="post">
+                            @csrf
+                            <button class="btn btn-success mx-1">Active</button>
+                        </form>
+                        @endif
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-{{-- <script>
-    $(document).ready(function(){
-        $('#specialization').change(function(){
-            var specializationId = $(this).val();
-            console.log(specializationId);
-
-            $('#trainer').html('<option value="" disabled selected>Loading...</option>');
-            $.ajax({
-                url: 'trainer/get-trainer/' + specializationId,  // Correct URL structure
-                type: 'GET',
-                success: function(response) {
-                    if (response.length > 0) {
-                        $('#trainer').attr('disabled', false);  // Enable trainer dropdown
-                        $('#trainer').html('<option value="" disabled selected>Select Trainer..</option>'); // Reset trainer options
-                        $.each(response, function(key, trainer) {
-                            $('#trainer').append('<option value="' + trainer.id + '">' + trainer.name + '</option>');
-                        });
-                    } else {
-                        $('#trainer').attr('disabled', true);  // Disable trainer dropdown if no trainers
-                        $('#trainer').html('<option value="" disabled selected>No Trainers Available</option>');
-                    }
-                },
-                error: function() {
-                    $('#trainer').attr('disabled', true);  // Disable trainer dropdown on error
-                    $('#trainer').html('<option value="" disabled selected>Error loading trainers</option>');  // Show error message
-                }
-            })
-        })
-    });
-</script> --}}

@@ -25,8 +25,10 @@ Route::get('/', function(){
 
 Route::prefix('admin')->group(function(){
     Route::get('', [AdminController::class , 'index'])->name('admin-index');
-    Route::prefix('subscription')->group(function(){
+    Route::prefix('memberships')->group(function(){
         Route::get('', [AdminController::class , 'shipsIndex'])->name('membership-index');
+        Route::post('active/{id}', [AdminController::class , 'shipsActive'])->name('membership-active');
+        Route::post('inactive/{id}', [AdminController::class , 'shipsInactive'])->name('membership-inactive');
     });
     Route::prefix('trainer')->group(function(){
         Route::get('', [AdminController::class , 'trainerIndex'])->name('trainers-index');
@@ -42,6 +44,10 @@ Route::prefix('admin')->group(function(){
     Route::prefix('members')->group(function(){
         Route::get('', [AdminController::class , 'membersIndex'])->name('members-index');
         Route::post('', [AdminController::class , 'membersStore'])->name('members-store');
+    });
+
+    Route::prefix('payments')->group(function(){
+        Route::get('', [AdminController::class , 'paymentIndex'])->name('payment-index');
     });
 
 });

@@ -21,7 +21,8 @@ return new class extends Migration
             $table->unsignedBigInteger('membership_id');
             $table->foreign('membership_id')->on('memberships')->references('id')->onDelete('cascade')->onUpdate('cascade');
             $table->date('joining_date');
-            $table->date('expiry_date');
+            $table->date('activated_on')->nullable();
+            $table->date('expiry_date')->nullable();
             $table->string('status')->default('pending');
             $table->timestamps();
         });
