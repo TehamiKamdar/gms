@@ -9,9 +9,16 @@ Members
     </div>
 @endif
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Add New @yield('title')
-</button>
+<div class="d-flex justify-content-between">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Add New @yield('title')
+    </button>
+    <!-- Search Form -->
+    <form method="GET" action="{{route('members-search')}}" class="d-flex">
+        <input type="text" name="query" class="form-control" placeholder="Search Members..." value="{{ request()->query('query') }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -61,7 +68,7 @@ Members
 </div>
 
 
-<div class="table-responsive">
+<div class="table-responsive mt-3">
     <table class="table table-primary">
         <thead>
             <tr>

@@ -79,7 +79,29 @@ class AdminController extends Controller
         $payment->paid_amount = 0;
         $payment->save();
 
+        $user = new User();
+        $user->email = $req->email;
+        $user->name = $req->first_name." ".$req->last_name;
+        $user->password = Hash::make(12345678);
+        $user->role = 2;
+        $user->save();
+
         return redirect()->route('members-index')->with('success', "Member Registered");
+    }
+
+    public function membersSearch(Request $req){
+
+        $memberships = memberships::all();
+        $query = $req->input('query');
+
+        // Fetch members and apply filter if query exists
+        $members = members::when($query, function ($queryBuilder) use ($query) {
+            return $queryBuilder->where('first_name', 'LIKE', "%{$query}%")
+                                ->orWhere('last_name', 'LIKE', "%{$query}%")
+                                ->orWhere('email', 'LIKE', "%{$query}%");
+        })->get();
+
+        return view('admin.members.index', compact('members', 'memberships'));
     }
 
     public function trainerIndex()
@@ -158,6 +180,10 @@ class AdminController extends Controller
         ->where('members.id', '=', $id)
         ->first();
 
+        if (!$details) {
+            abort(403, 'Member not found.');
+        }
+
         return view('admin.payments.details', compact('details'));
     }
 
@@ -199,6 +225,8 @@ class AdminController extends Controller
         return redirect()->route('payment-details', $id)->with('success', 'Payment Received');
     }
 
-
+    public function enrollIndex(){
+        return view('admin.enrollments.index');
+    }
 
 }

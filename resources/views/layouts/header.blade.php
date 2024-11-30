@@ -7,6 +7,8 @@
     <title>Modernize Free</title>
     <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/logos/favicon.png') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
 
 <body>
@@ -29,25 +31,25 @@
                 <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
                     <ul id="sidebarnav">
                         <li class="nav-small-cap">
-                            <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                            <i class="fas fa-ellipsis-h nav-small-cap-icon fs-4"></i>
                             <span class="hide-menu">Home</span>
                         </li>
                         <li class="sidebar-item">
                             <a class="sidebar-link" href="{{ route('admin-index') }}" aria-expanded="false">
                                 <span>
-                                    <i class="ti ti-layout-dashboard"></i>
+                                    <i class="fas fa-home"></i>
                                 </span>
                                 <span class="hide-menu">Dashboard</span>
                             </a>
                         </li>
                         <li class="nav-small-cap">
-                            <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                            <i class="fas fa-ellipsis-h nav-small-cap-icon fs-4"></i>
                             <span class="hide-menu">UI COMPONENTS</span>
                         </li>
                         <li class="sidebar-item">
                             <a class="sidebar-link" href="{{ route('membership-index') }}" aria-expanded="false">
                                 <span>
-                                    <i class="ti ti-cards"></i>
+                                    <i class="fas fa-id-card"></i>
                                 </span>
                                 <span class="hide-menu">Membership</span>
                             </a>
@@ -55,7 +57,7 @@
                         <li class="sidebar-item">
                             <a class="sidebar-link" href="{{ route('members-index') }}" aria-expanded="false">
                                 <span>
-                                    <i class="ti ti-cards"></i>
+                                    <i class="fas fa-users"></i>
                                 </span>
                                 <span class="hide-menu">Members</span>
                             </a>
@@ -63,7 +65,7 @@
                         <li class="sidebar-item">
                             <a class="sidebar-link" href="{{ route('trainers-index') }}" aria-expanded="false">
                                 <span>
-                                    <i class="ti ti-article"></i>
+                                    <i class="fas fa-dumbbell"></i>
                                 </span>
                                 <span class="hide-menu">Trainers</span>
                             </a>
@@ -71,7 +73,7 @@
                         <li class="sidebar-item">
                             <a class="sidebar-link" href="{{ route('classes-index') }}" aria-expanded="false">
                                 <span>
-                                    <i class="ti ti-alert-circle"></i>
+                                    <i class="fas fa-chalkboard-teacher"></i>
                                 </span>
                                 <span class="hide-menu">Classes</span>
                             </a>
@@ -79,47 +81,73 @@
                         <li class="sidebar-item">
                             <a class="sidebar-link" href="{{ route('payment-index') }}" aria-expanded="false">
                                 <span>
-                                    <i class="ti ti-file-description"></i>
+                                    <i class="fas fa-wallet"></i>
                                 </span>
                                 <span class="hide-menu">Payments</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="./ui-typography.html" aria-expanded="false">
+                            <a class="sidebar-link" href="{{route('enrollment-index')}}" aria-expanded="false">
                                 <span>
-                                    <i class="ti ti-typography"></i>
+                                    <i class="fas fa-user-plus"></i>
                                 </span>
-                                <span class="hide-menu">Typography</span>
+                                <span class="hide-menu">Enrollments</span>
                             </a>
                         </li>
                         <li class="nav-small-cap">
-                            <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                            <i class="fas fa-ellipsis-h nav-small-cap-icon fs-4"></i>
                             <span class="hide-menu">AUTH</span>
                         </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="./authentication-login.html" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-login"></i>
-                                </span>
-                                <span class="hide-menu">Login</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="./authentication-register.html" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-user-plus"></i>
-                                </span>
-                                <span class="hide-menu">Register</span>
-                            </a>
-                        </li>
+                        @if (Route::has('login'))
+
+                            @auth
+                                <li class="sidebar-item">
+                                    <!-- Modal Trigger -->
+                                    <button class="btn" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                                        <span>
+                                            <i class="fas fa-sign-out-alt"></i>
+                                        </span>
+                                        <span class="hide-menu">Log Out</span>
+                                    </button>
+                                </li>
+                            
+
+                                <!-- Modal -->
+                                <div class="modal fade"  id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to log out?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cancel</button>
+                                                <form method="POST" action="{{ route('logout') }}">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-danger">Log Out</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+
+                            @endauth
+                        @endif
                         <li class="nav-small-cap">
-                            <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                            <i class="fas fa-ellipsis-h nav-small-cap-icon fs-4"></i>
                             <span class="hide-menu">EXTRA</span>
                         </li>
                         <li class="sidebar-item">
                             <a class="sidebar-link" href="./icon-tabler.html" aria-expanded="false">
                                 <span>
-                                    <i class="ti ti-mood-happy"></i>
+                                    <i class="fas fa-smile"></i>
                                 </span>
                                 <span class="hide-menu">Icons</span>
                             </a>
@@ -127,12 +155,13 @@
                         <li class="sidebar-item">
                             <a class="sidebar-link" href="./sample-page.html" aria-expanded="false">
                                 <span>
-                                    <i class="ti ti-aperture"></i>
+                                    <i class="fas fa-file-alt"></i>
                                 </span>
                                 <span class="hide-menu">Sample Page</span>
                             </a>
                         </li>
                     </ul>
+
                     <div class="unlimited-access hide-menu bg-light-primary position-relative mb-7 mt-5 rounded">
                         <div class="d-flex">
                             <div class="unlimited-access-title me-3">
@@ -141,8 +170,7 @@
                                     target="_blank" class="btn btn-primary fs-2 fw-semibold lh-sm">Buy Pro</a>
                             </div>
                             <div class="unlimited-access-img">
-                                <img src="{{ asset('assets/images/backgrounds/rocket.png') }}" alt=""
-                                    class="img-fluid">
+                                <img src="{{ asset('assets/images/backgrounds/rocket.png') }}" alt="" class="img-fluid">
                             </div>
                         </div>
                     </div>
@@ -178,8 +206,8 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2"
                                     data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img src="{{ asset('assets/images/profile/user-1.jpg') }}" alt=""
-                                        width="35" height="35" class="rounded-circle">
+                                    <img src="{{ asset('assets/images/profile/user-1.jpg') }}" alt="" width="35"
+                                        height="35" class="rounded-circle">
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
                                     aria-labelledby="drop2">

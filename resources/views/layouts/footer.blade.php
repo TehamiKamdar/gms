@@ -15,3 +15,12 @@
 </body>
 
 </html>
+<script>
+    // Ensuring that backdrop does not block button click
+    document.getElementById('logoutModal').addEventListener('shown.bs.modal', function () {
+        var modalBackdrop = document.querySelector('.modal-backdrop');
+        if (modalBackdrop) {
+            modalBackdrop.style.visibility = 'hidden'; // Ensure backdrop is below modal content
+        }
+    });
+</script>

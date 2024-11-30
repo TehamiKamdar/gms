@@ -44,12 +44,18 @@ Route::prefix('admin')->group(function(){
     Route::prefix('members')->group(function(){
         Route::get('', [AdminController::class , 'membersIndex'])->name('members-index');
         Route::post('', [AdminController::class , 'membersStore'])->name('members-store');
+        Route::get('search', [AdminController::class , 'membersSearch'])->name('members-search');
     });
 
     Route::prefix('payments')->group(function(){
         Route::get('', [AdminController::class , 'paymentIndex'])->name('payment-index');
         Route::get('details/{id}', [AdminController::class , 'paymentDetails'])->name('payment-details');
         Route::post('update/payment/{id}', [AdminController::class , 'updatePayment'])->name('update-payment');
+    });
+
+    
+    Route::prefix('enrollments')->group(function(){
+        Route::get('', [AdminController::class , 'enrollIndex'])->name('enrollment-index');
     });
 
 });
