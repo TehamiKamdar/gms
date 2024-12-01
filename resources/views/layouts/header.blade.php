@@ -55,6 +55,14 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ route('specialization-index') }}" aria-expanded="false">
+                                <span>
+                                    <i class="fas fa-id-card"></i>
+                                </span>
+                                <span class="hide-menu">Specialization</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
                             <a class="sidebar-link" href="{{ route('members-index') }}" aria-expanded="false">
                                 <span>
                                     <i class="fas fa-users"></i>
@@ -84,6 +92,15 @@
                                     <i class="fas fa-wallet"></i>
                                 </span>
                                 <span class="hide-menu">Payments</span>
+                            </a>
+                        </li>
+                        
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ route('transaction-index') }}" aria-expanded="false">
+                                <span>
+                                    <i class="fas fa-wallet"></i>
+                                </span>
+                                <span class="hide-menu">Transactions</span>
                             </a>
                         </li>
                         <li class="sidebar-item">

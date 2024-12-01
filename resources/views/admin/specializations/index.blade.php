@@ -1,7 +1,10 @@
 @extends('layouts.main')
 @section('title')
-Membership
+
+Specialization
+   
 @endsection
+
 @section('main-section')
 @if (session('success'))
     <div class="alert alert-success">
@@ -32,12 +35,10 @@ Membership
                 <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('membership-store') }}" method="post">
+            <form action="{{ route('specialization-store') }}" method="post">
                 @csrf
                 <div class="modal-body">
-                    <input type="text" name="type" placeholder="Membership Type" id="" class="form-control mt-3">
-                    <input type="text" name="duration" placeholder="Duration (in days)" id="" class="form-control mt-3">
-                    <input type="text" name="price" placeholder="Price" id="" class="form-control mt-3">
+                    <input type="text" name="name" placeholder="Specialization" id="" class="form-control mt-3">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -51,28 +52,22 @@ Membership
     <table class="table table-primary text-center">
         <thead>
             <tr>
-                <th scope="col">Type</th>
-                <th scope="col">Price</th>
-                <th scope="col">Duration (in days)</th>
+                <th scope="col">Specialization</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            @if ($memberships->count()>0)
-                
-            @foreach ($memberships as $m)
+            @foreach ($specializations as $m)
                 <tr class="">
-                    <td>{{$m->type}}</td>
-                    <td>{{$m->price}}</td>
-                    <td>{{$m->duration}}</td>
+                    <td>{{$m->name}}</td>
                     <td>
                         @if ($m->status == 'active')
-                            <form action="{{route('membership-inactive', $m->id)}}" method="post">
+                            <form action="{{route('specialization-inactive', $m->id)}}" method="post">
                                 @csrf
                                 <button class="btn btn-danger mx-1">Inactive</button>
                             </form>
                         @else
-                            <form action="{{route('membership-active', $m->id)}}" method="post">
+                            <form action="{{route('specialization-active', $m->id)}}" method="post">
                                 @csrf
                                 <button class="btn btn-success mx-1">Active</button>
                             </form>
@@ -80,13 +75,7 @@ Membership
                     </td>
                 </tr>
             @endforeach
-            @else
-                <tr>
-                    <td colspan="4" class="text-center">No Memberships Decided Yet</td>
-                </tr>
-            @endif
         </tbody>
     </table>
 </div>
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

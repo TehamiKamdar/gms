@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\enrollments;
+use App\Models\payment_logs;
 use App\Models\User;
 use App\Models\classes;
 use App\Models\members;
@@ -27,6 +29,17 @@ class AdminController extends Controller
         return view('admin.memberships.index', compact('memberships'));
     }
 
+    public function shipsStore(Request $req)
+    {
+        $m = new memberships();
+        $m->type = $req->type;
+        $m->duration = $req->duration;
+        $m->price = $req->price;
+
+        $m->save();
+        return redirect()->route('membership-index')->with('success', 'Membership Created');
+    }
+
     public function shipsActive($id)
     {
         $membership = memberships::find($id);
@@ -44,6 +57,40 @@ class AdminController extends Controller
         $membership->save();
 
         return redirect()->route('membership-index')->with('inactive', 'Membership Inactivated');
+    }
+
+    public function specializationIndex()
+    {
+        $specializations = specializations::all();
+        return view('admin.specializations.index', compact('specializations'));
+    }
+
+    public function specializationStore(Request $req)
+    {
+        $s = new specializations();
+        $s->name = $req->name;
+
+        $s->save();
+        return redirect()->route('specialization-index')->with('success', 'Specialization Created');
+    }
+
+    public function specializationActive($id)
+    {
+        $specialization = specializations::find($id);
+        $specialization->status = 'active';
+        $specialization->save();
+
+        return redirect()->route('specialization-index')->with('active', 'Specialization Activated');
+    }
+
+
+    public function specializationInactive($id)
+    {
+        $specialization = specializations::find($id);
+        $specialization->status = 'inactive';
+        $specialization->save();
+
+        return redirect()->route('specialization-index')->with('inactive', 'Specialization Inactivated');
     }
 
 
@@ -70,7 +117,7 @@ class AdminController extends Controller
         $member->expiry_date = $req->end_date;
         $member->save();
 
-        $membership=memberships::find($req->membership_id);
+        $membership = memberships::find($req->membership_id);
 
         $payment = new payments();
         $payment->member_id = $member->id;
@@ -81,7 +128,7 @@ class AdminController extends Controller
 
         $user = new User();
         $user->email = $req->email;
-        $user->name = $req->first_name." ".$req->last_name;
+        $user->name = $req->first_name . " " . $req->last_name;
         $user->password = Hash::make(12345678);
         $user->role = 2;
         $user->save();
@@ -89,7 +136,24 @@ class AdminController extends Controller
         return redirect()->route('members-index')->with('success', "Member Registered");
     }
 
-    public function membersSearch(Request $req){
+
+    public function memberDetails($id)
+    {
+        $details = payments::join('members', 'members.id', '=', 'payments.member_id')
+            ->join('memberships', 'memberships.id', '=', 'payments.membership_id')
+            ->select('payments.*', 'members.*', 'memberships.*', 'members.id as member_id', 'payments.status as payment_status')
+            ->where('members.id', '=', $id)
+            ->first();
+
+        if (!$details) {
+            abort(403, 'Member not found.');
+        }
+
+        return view('admin.members.details', compact('details'));
+    }
+
+    public function membersSearch(Request $req)
+    {
 
         $memberships = memberships::all();
         $query = $req->input('query');
@@ -97,8 +161,8 @@ class AdminController extends Controller
         // Fetch members and apply filter if query exists
         $members = members::when($query, function ($queryBuilder) use ($query) {
             return $queryBuilder->where('first_name', 'LIKE', "%{$query}%")
-                                ->orWhere('last_name', 'LIKE', "%{$query}%")
-                                ->orWhere('email', 'LIKE', "%{$query}%");
+                ->orWhere('last_name', 'LIKE', "%{$query}%")
+                ->orWhere('email', 'LIKE', "%{$query}%");
         })->get();
 
         return view('admin.members.index', compact('members', 'memberships'));
@@ -106,10 +170,10 @@ class AdminController extends Controller
 
     public function trainerIndex()
     {
-        $specializations = specializations::all();
+        $specializations = specializations::where('status', 'active')->get();
         $trainers = trainers::join('specializations', 'specializations.id', '=', 'trainers.specialization_id')
-        ->select('trainers.*','trainers.name as trainer_name', 'specializations.*', 'specializations.name as specialization')
-        ->get();
+            ->select('trainers.*', 'trainers.name as trainer_name', 'specializations.*', 'specializations.name as specialization')
+            ->get();
         return view('admin.trainer.index', compact('specializations', 'trainers'));
     }
 
@@ -143,10 +207,31 @@ class AdminController extends Controller
 
     public function classesIndex()
     {
+
         $specializations = specializations::all();
         $trainers = trainers::all();
-        return view('admin.classes.index', compact('specializations'));
+
+        $classes = classes::join('specializations', 'specializations.id', '=', 'classes.specialization_id')
+            ->join('trainers', 'trainers.id', '=', 'classes.trainerId')
+            ->select('trainers.*', 'specializations.*', 'classes.*', 'trainers.name AS trainer_name')
+            ->get();
+
+        return view('admin.classes.index', compact('specializations', 'trainers', 'classes'));
     }
+    public function getClasses($id)
+    {
+        // $classes = classes::where('specialization_id', $id)->get();
+        $classes = classes::join('specializations', 'specializations.id', '=', 'classes.specialization_id')
+            ->join('trainers', 'trainers.id', '=', 'classes.trainerId')
+            ->select('trainers.name as trainer_name', 'classes.start_date', 'classes.id', 'classes.days', 'classes.time')
+            ->where('classes.specialization_id', $id)
+            ->where('classes.start_date', '>', now())
+            ->where('classes.capacity', '>', 0)
+            ->get();
+        // Return as JSON
+        return response()->json(['classes' => $classes]);
+    }
+
     public function classesStore(Request $req)
     {
         $class = new classes();
@@ -169,64 +254,155 @@ class AdminController extends Controller
     {
         $payments = payments::join('members', 'payments.member_id', '=', 'members.id')
             ->select('payments.*', 'members.*')
+            ->where('payments.total_amount', '>=', 'payments.paid_amount')
             ->get();
         return view('admin.payments.index', compact('payments'));
     }
 
-    public function paymentDetails($id){
-        $details = payments::join('members', 'members.id', '=', 'payments.member_id')
-        ->join('memberships', 'memberships.id', '=', 'payments.membership_id')
-        ->select('payments.*', 'members.*', 'memberships.*', 'members.id as member_id', 'payments.status as payment_status')
-        ->where('members.id', '=', $id)
-        ->first();
-
-        if (!$details) {
-            abort(403, 'Member not found.');
-        }
-
-        return view('admin.payments.details', compact('details'));
-    }
 
 
-    public function updatePayment(Request $request, $id)
+    // public function updatePayment(Request $request, $id)
+    // {
+    //     // Fetch the payment record
+    //     $pay = payments::where('member_id', '=', $id)->first();
+
+    //     if (!$pay) {
+    //         return redirect()->back()->with('error', 'Payment record not found.');
+    //     }
+
+    //     // Update payment details
+    //     $pay->paid_amount = $request->amount;
+    //     $pay->method = $request->paymentMode;
+    //     $pay->payment_date = now();
+
+    //     // Update payment status based on total amount
+    //     if ($pay->total_amount == $request->amount) {
+    //         $pay->status = 'cleared';
+
+    //         // Update member status in the members table
+    //         $member = members::find($id);
+    //         if ($member) {
+    //             $member->status = 'active';
+    //             // $member->activated_on = now();
+
+    //             // Calculate membership expiry based on membership type
+    //             // $duration = $member->membership->duration ?? 30; // Default to 30 days if duration not set
+    //             // $member->membership_expiry = now()->addDays($duration);
+
+    //             $member->save();
+    //         }
+    //     }
+
+    //     $pay->save();
+
+    //     return redirect()->route('payment-details', $id)->with('success', 'Payment Received');
+    // }
+
+    public function enrollIndex()
     {
-        // Fetch the payment record
-        $pay = payments::where('member_id', '=', $id)->first();
+        $members = members::where('status', '=', 'active')->get();
+        $specializations = specializations::all();
 
-        if (!$pay) {
-            return redirect()->back()->with('error', 'Payment record not found.');
+        $classes = classes::join('specializations', 'specializations.id', '=', 'classes.specialization_id')
+            ->join('trainers', 'trainers.id', '=', 'classes.trainerId')
+            ->select('trainers.*', 'specializations.*', 'classes.*', 'trainers.name AS trainer_name')
+            ->get();
+        return view('admin.enrollments.index', compact('members', 'specializations', 'classes'));
+    }
+
+    public function enrollmentStore(Request $req)
+    {
+        $enrollment = new enrollments();
+        $enrollment->member_id = $req->member;
+        $enrollment->class_id = $req->class;
+        $enrollment->enrollment_date = $req->enroll_date;
+        $enrollment->save();
+
+        $payment = payments::where('member_id', $req->member)->first(); // Fetch the payment record
+        $class = classes::find($req->class);
+        $member = members::find($req->member); // Fetch the member directly
+
+        // Update the payment record and class capacity
+        if ($payment && $class) { // Ensure both payment and class exist
+            $payment->total_amount += $class->fees; // Add class fees to total
+            $class->capacity -= 1; // Decrease class capacity
+            $class->save();
+
+            // Update payment status to 'pending'
+            $payment->status = 'pending';
+            $payment->save();
         }
 
-        // Update payment details
-        $pay->paid_amount = $request->amount;
-        $pay->method = $request->paymentMode;
-        $pay->payment_date = now();
+        // Update the member's status to 'pending'
+        if ($member) {
+            $member->status = 'pending';
+            $member->save();
+        }
 
-        // Update payment status based on total amount
-        if ($pay->total_amount == $request->amount) {
-            $pay->status = 'cleared';
 
-            // Update member status in the members table
-            $member = members::find($id);
-            if ($member) {
-                $member->status = 'active';
-                // $member->activated_on = now();
 
-                // Calculate membership expiry based on membership type
-                // $duration = $member->membership->duration ?? 30; // Default to 30 days if duration not set
-                // $member->membership_expiry = now()->addDays($duration);
+        return redirect()->route('enrollment-index')->with('success', 'Member Enrolled');
 
-                $member->save();
+    }
+
+    public function transactionIndex()
+    {
+        $members = members::join('payments', 'payments.member_id', '=', 'members.id')
+            ->select('members.*', 'payments.*', 'members.id AS member_id')
+            ->whereColumn('payments.total_amount', '>', 'payments.paid_amount')
+            ->get();
+
+        $transactions = payment_logs::join('members', 'members.id', '=', 'payment_logs.member_id')
+            ->select('payment_logs.*', 'members.*')
+            ->get();
+
+        return view('admin.transactions.index', compact('members', 'transactions'));
+    }
+
+    public function transactionStore(Request $req)
+    {
+        $transaction = new payment_logs();
+        $transaction->member_id = $req->member;
+        $transaction->description = $req->description;
+        $transaction->amount = $req->amount;
+        $transaction->payment_mode = $req->method;
+        $transaction->referrence_id = $req->referrence_id;
+        $transaction->payment_date = $req->payment_date; // Fixed the incorrect property
+        $transaction->save();
+
+        $payment = payments::where('member_id', $req->member)->first(); // Use first() to get the first record
+
+
+
+        if ($payment) {
+            $payment->paid_amount += $req->amount;
+
+            if ($payment->total_amount == ($payment->paid_amount)) { // Make sure to compare correctly
+                $member = members::find($req->member);
+                if ($member) {
+                    $member->status = 'active';
+                    $member->save();
+                }
+                $payment->status = 'cleared';
             }
+
+            $payment->save();
         }
 
-        $pay->save();
 
-        return redirect()->route('payment-details', $id)->with('success', 'Payment Received');
+        return redirect()->route('transaction-index')->with('success', 'Transaction Registered');
+
     }
 
-    public function enrollIndex(){
-        return view('admin.enrollments.index');
+    public function getMember($id)
+    {
+        $payment = payments::where('member_id', $id)->first();
+
+        return response()->json([
+            'total_amount' => $payment->total_amount,
+            'paid_amount' => $payment->paid_amount
+        ]);
     }
+
 
 }

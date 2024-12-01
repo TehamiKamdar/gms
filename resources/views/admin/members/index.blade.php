@@ -77,7 +77,7 @@ Members
                 <th scope="col">Membership</th>
                 <th scope="col">Joining Date</th>
                 <th scope="col">Ending Date</th>
-                <th scope="col">Status</th>
+                <th colspan="2" class="text-center">Status</th>
             </tr>
         </thead>
         <tbody>
@@ -96,6 +96,8 @@ Members
                                 <button class="btn btn-success">Active</button>
                             @endif
                         </td>
+                        <td><a href="{{route('member-details', $mem->id)}}" class="btn btn-outline-secondary">Details</a></td>
+
                     </tr>
                 @endforeach
             @else

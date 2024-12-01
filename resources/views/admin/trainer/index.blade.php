@@ -33,7 +33,7 @@
                         <input type="text" name="salary" placeholder="Trainer Salary" id=""
                             class="form-control mt-3">
                         <select name="specialization" class="form-control mt-3" id="">
-                            <option value="" disabled selected>Select an Option..</option>
+                            <option value="" disabled selected>Select Speciality</option>
                             @foreach ($specializations as $specialization)
                                 <option value="{{ $specialization->id }}">{{ $specialization->name }}</option>
                             @endforeach
@@ -47,7 +47,7 @@
             </div>
         </div>
     </div>
-    <div class="table-responsive">
+    <div class="table-responsive mt-3">
         <table class="table table-primary">
             <thead>
                 <tr>
@@ -58,6 +58,7 @@
                 </tr>
             </thead>
             <tbody>
+                @if ($trainers->count()>0)
                 @foreach ($trainers as $t)
                     <tr class="">
                         <td>{{$t->trainer_name}}</td>
@@ -66,6 +67,11 @@
                         <td>{{$t->salary}}</td>
                     </tr>
                 @endforeach
+                @else
+                    <tr>
+                        <td colspan="4" class="text-center">No Trainers Available</td>
+                    </tr>
+                @endif
             </tbody>
         </table>
     </div>

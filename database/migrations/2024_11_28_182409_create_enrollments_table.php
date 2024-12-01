@@ -18,8 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('class_id');
             $table->foreign('class_id')->references('id')->on('classes')->onDelete('cascade')->onUpdate('cascade');
             $table->date('enrollment_date');
-            $table->string('status')->default('active');
-            $table->string('payment_status')->default('paid');
+            $table->string('payment_status')->default('pending');
             $table->timestamps();
         });
     }

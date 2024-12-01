@@ -78,7 +78,7 @@ Payment Details
 </div>
 
 <!-- Payment Processing -->
-<div class="card">
+{{--<div class="card">
     <div class="card-header bg-secondary text-white">
         Process Payment
     </div>
@@ -107,9 +107,9 @@ Payment Details
             <button type="submit" class="btn btn-primary w-100">Submit Payment</button>
         </form>
     </div>
-</div>
+</div>--}}
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
         $('#paymentMode').on('change', function () {
@@ -121,4 +121,4 @@ Payment Details
         });
     });
 
-</script>
+</script> -->
