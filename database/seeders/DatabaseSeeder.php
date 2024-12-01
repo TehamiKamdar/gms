@@ -16,14 +16,9 @@ class DatabaseSeeder extends Seeder
     {
         DB::table('users')->insert([
             "name" => "Tehami",
-            "email" => 'tehami@aptechgdn.net',
+            "email" => 'tehami@gms.com',
             "password" => Hash::make(12345678),
             "role" => 0
-        ]);
-        $this->call([
-            MembershipSeeder::class,
-            SpecializationSeeder::class,
-            TrainerSeeder::class
         ]);
     }
 }
