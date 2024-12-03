@@ -42,7 +42,7 @@ Specialization
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Add New @yield('title')</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ route('specialization-store') }}" method="post">
@@ -67,6 +67,7 @@ Specialization
             </tr>
         </thead>
         <tbody>
+            @if ($specializations->count() > 0)
             @foreach ($specializations as $m)
                 <tr class="">
                     <td>{{$m->name}}</td>
@@ -90,6 +91,11 @@ Specialization
                     </td>
                 </tr>
             @endforeach
+            @else
+                <tr>
+                    <td colspan="2" class="text-center">No Exercises Available</td>
+                </tr>
+            @endif
         </tbody>
     </table>
 </div>

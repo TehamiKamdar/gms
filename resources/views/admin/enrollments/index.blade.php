@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('title')
-Enrollments
+Enrollment
 @endsection
 
 @section('main-section')
@@ -9,6 +9,12 @@ Enrollments
    <div class="alert alert-success">
       {{session('success')}}
    </div>
+@endif
+
+@if (session('delete'))
+    <div class="alert alert-danger">
+        {{ session('delete') }}
+    </div>
 @endif
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -20,7 +26,7 @@ Enrollments
    <div class="modal-dialog">
       <div class="modal-content">
          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <h5 class="modal-title" id="exampleModalLabel">Add New @yield('title')</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
          <form action="{{ route('enrollment-store') }}" method="post">
@@ -80,7 +86,8 @@ Enrollments
                <td>{{$e->trainer_name}}</td>
                <td>{{$e->days}}</td>
                <td>{{$e->time}}</td>
-               <td>
+               <td class="d-flex justify-content-center">
+                  <button type="button" class="mx-1 btn btn-danger open-modal-delete" data-id="{{$e->enrollment_id}}" data-bs-target="#modalDelete" data-bs-toggle="modal">Delete</button>
                   @if ($e->enrollstatus == 'cleared')
                      <button class="btn btn-primary">Cleared</button>
                      @else
@@ -92,13 +99,34 @@ Enrollments
             @endforeach
          @else
             <tr>
-               <td colspan="4" class="text-center">No Enrollments</td>
+               <td colspan="6" class="text-center">No Enrollments</td>
             </tr>
          @endif  
       </tbody>
    </table>
 </div>
 
+<div class="modal fade" id="modalDelete" tabindex="-1" aria-labelledby="modalDelete" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDelete">Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('enrollment-delete') }}" method="post">
+                @csrf
+                <div class="modal-body">
+                    <input type="hidden" name="id_" id="id_">
+                    <h6>Are you sure you want to Delete?</h6>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -136,5 +164,22 @@ Enrollments
             });
          }
       });
+      $(document).on('click', '.open-modal-delete', function () {
+            var id = $(this).attr('data-id'); 
+            console.log(id);
+            $.ajax({
+                url: 'enrollments/get-enrollment/' + id,
+                method: 'GET',
+                success: function (response) {
+                    console.log(response);
+                    $('#modalDelete').modal('show');
+                    $('#id_').val(response.id);
+                },
+                error: function (xhr) {
+                    console.error(xhr);
+                    alert('Error fetching membership details.');
+                }
+            });
+        });
    });
 </script>

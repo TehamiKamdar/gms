@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->integer('amount');
             $table->enum('payment_mode', ['cash', 'online']);
-            $table->string('referrence_id')->nullable();
             $table->date('payment_date');
             $table->timestamps();
         });

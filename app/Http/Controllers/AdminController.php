@@ -660,6 +660,22 @@ class AdminController extends Controller
 
     }
 
+    public function getEnrollment($id){
+        // $id = $req->id_;
+        $enrollment = enrollments::select('id')->find($id);
+
+        return response()->json($enrollment);
+
+    }
+
+    public function enrollmentDelete(Request $req){
+        $id = $req->id_;
+        $enrollment = enrollments::find($id);
+        $enrollment->delete();
+
+        return redirect()->route('enrollment-index')->with('delete', 'Enrollment Deleted');
+    }
+
     public function transactionIndex()
     {
 

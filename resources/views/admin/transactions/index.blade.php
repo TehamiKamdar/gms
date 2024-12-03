@@ -22,7 +22,7 @@ Transaction
    <div class="modal-dialog">
       <div class="modal-content">
          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <h5 class="modal-title" id="exampleModalLabel">Add New @yield('title')</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
          <form action="{{route('transaction-store')}}" method="post">
@@ -45,9 +45,6 @@ Transaction
                   <option value="online">Online</option>
                </select>
 
-               <input type="text" name="referrence_id" id="referrence_id" placeholder="Referrence Id" disabled
-                  class="form-control mt-3">
-
                <input type="date" name="payment_date" value="{{now()->format('Y-m-d')}}" class="form-control mt-3">
             </div>
 
@@ -61,7 +58,7 @@ Transaction
    </div>
 </div>
 
-<div class="table-responsive">
+<div class="table-responsive mt-3">
    <table class="table table-primary">
       <thead>
          <tr>
@@ -69,7 +66,6 @@ Transaction
             <th scope="col">Description</th>
             <th scope="col">Amount</th>
             <th scope="col">M.O.P</th>
-            <th scope="col">R.ID</th>
             <th scope="col">Pay Date</th>
          </tr>
       </thead>
@@ -81,7 +77,6 @@ Transaction
                   <td>{{$t->description}}</td>
                   <td>{{$t->amount}}</td>
                   <td>{{ucwords($t->payment_mode)}}</td>
-                  <td>{{$t->referrence_id??'Cash Transaction'}}</td>
                   <td>{{$t->payment_date}}</td>
                </tr>
             @endforeach            

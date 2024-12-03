@@ -82,6 +82,8 @@ Route::prefix('admin')->group(function(){
     Route::prefix('enrollments')->group(function(){
         Route::get('', [AdminController::class , 'enrollIndex'])->name('enrollment-index');
         Route::post('', [AdminController::class , 'enrollmentStore'])->name('enrollment-store');
+        Route::get('get-enrollment/{id}', [AdminController::class , 'getEnrollment']);
+        Route::post('delete', [AdminController::class , 'enrollmentDelete'])->name('enrollment-delete');
     });
 
 });

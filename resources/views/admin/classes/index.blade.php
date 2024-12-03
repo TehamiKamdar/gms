@@ -1,6 +1,6 @@
 @extends('layouts.main')
 @section('title')
-Classes
+Class
 @endsection
 @section('main-section')
     @if (session('success'))
@@ -18,7 +18,7 @@ Classes
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Add New @yield('title')</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{route('classes-store')}}" method="post">
@@ -77,7 +77,7 @@ Classes
 </div>
 
 
-<div class="table-responsive">
+<div class="table-responsive mt-3">
     <table class="table table-primary">
         <thead>
             <tr>
@@ -121,7 +121,7 @@ Classes
 
             $('#trainer').html('<option value="" disabled selected>Loading...</option>');
             $.ajax({
-                url: 'trainer/get-trainer/' + specializationId,  // Correct URL structure
+                url: 'trainer/get-trainer-spec/' + specializationId,  // Correct URL structure
                 type: 'GET',
                 success: function (response) {
                     if (response.length > 0) {
