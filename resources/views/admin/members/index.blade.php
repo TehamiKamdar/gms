@@ -8,6 +8,16 @@ Members
         {{ session('success') }}
     </div>
 @endif
+@if (session('update'))
+    <div class="alert alert-success">
+        {{ session('update') }}
+    </div>
+@endif
+@if (session('delete'))
+    <div class="alert alert-danger">
+        {{ session('delete') }}
+    </div>
+@endif
 <!-- Button trigger modal -->
 <div class="d-flex justify-content-between">
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">

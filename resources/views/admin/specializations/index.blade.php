@@ -2,7 +2,7 @@
 @section('title')
 
 Specialization
-   
+
 @endsection
 
 @section('main-section')
@@ -19,6 +19,16 @@ Specialization
 @if (session('inactive'))
     <div class="alert alert-danger">
         {{ session('inactive') }}
+    </div>
+@endif
+@if (session('update'))
+    <div class="alert alert-success">
+        {{ session('update') }}
+    </div>
+@endif
+@if (session('delete'))
+    <div class="alert alert-danger">
+        {{ session('delete') }}
     </div>
 @endif
 <!-- Button trigger modal -->
@@ -60,7 +70,12 @@ Specialization
             @foreach ($specializations as $m)
                 <tr class="">
                     <td>{{$m->name}}</td>
-                    <td>
+                    <td class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-primary open-modal-update" data-id="{{$m->id}}"
+                            data-bs-target="#modalUpdate" data-bs-toggle="modal">Update</button>
+                        <button type="button" class="mx-1 btn btn-danger open-modal-delete" data-id="{{$m->id}}"
+                            data-bs-target="#modalDelete" data-bs-toggle="modal">Delete</button>
+
                         @if ($m->status == 'active')
                             <form action="{{route('specialization-inactive', $m->id)}}" method="post">
                                 @csrf
@@ -78,4 +93,90 @@ Specialization
         </tbody>
     </table>
 </div>
+<div class="modal fade" id="modalUpdate" tabindex="-1" aria-labelledby="modalUpdate" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalUpdate">Update</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('specialization-update') }}" method="post">
+                @csrf
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="id">
+                    <input type="text" id="name_" name="name" placeholder="Name"
+                        class="form-control mt-3">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalDelete" tabindex="-1" aria-labelledby="modalDelete" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDelete">Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('specialization-delete') }}" method="post">
+                @csrf
+                <div class="modal-body">
+                    <input type="hidden" name="id_" id="id_">
+                    <h6>Are you sure you want to Delete?</h6>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '.open-modal-update', function () {
+            var id = $(this).attr('data-id'); 
+            console.log(id);
+            $.ajax({
+                url: 'specializations/get-specialization/' + id,
+                method: 'GET',
+                success: function (response) {
+                    console.log(response);
+                    $('#modalUpdate').modal('show');
+                    $('#id').val(response.id);
+                    $('#name_').val(response.name || 'Error Fetching Record');
+                },
+                error: function (xhr) {
+                    console.error(xhr);
+                    alert('Error fetching membership details.');
+                }
+            });
+        });
+        $(document).on('click', '.open-modal-delete', function () {
+            var id = $(this).attr('data-id'); 
+            console.log(id);
+            $.ajax({
+                url: 'specializations/get-specialization/' + id,
+                method: 'GET',
+                success: function (response) {
+                    console.log(response);
+                    $('#modalDelete').modal('show');
+                    $('#id_').val(response.id);
+                },
+                error: function (xhr) {
+                    console.error(xhr);
+                    alert('Error fetching membership details.');
+                }
+            });
+        });
+    });
+</script>
 @endsection

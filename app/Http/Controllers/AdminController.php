@@ -104,6 +104,51 @@ class AdminController extends Controller
         }
     }
 
+    public function getMembership($id){
+        $membership = memberships::select('id', 'type', 'duration', 'price')->find($id);
+        return response()->json($membership);
+
+    }
+
+    public function shipsUpdate(Request $req){
+        $id = $req->id;
+        $membership = memberships::find($id)->first();
+        $membership->type = $req->type;
+        $membership->duration = $req->duration;
+        $membership->price = $req->price;
+
+        $membership->save();
+
+        return redirect()->route('membership-index')->with('update', 'Membership Updated');
+    }
+    public function shipsDelete(Request $req){
+        $id = $req->id_;
+        $membership = memberships::find($id);
+        $membership->delete();
+        return redirect()->route('membership-index')->with('delete', 'Membership Delete');
+    }
+    public function getSpecialization($id){
+        $specialization = specializations::select('id', 'name')->find($id);
+        return response()->json($specialization);
+
+    }
+
+    public function specializationUpdate(Request $req){
+        $id = $req->id;
+        $specialization = specializations::find($id)->first();
+        $specialization->name = $req->name_;
+
+        $specialization->save();
+
+        return redirect()->route('specialization-index')->with('update', 'Specialization Updated');
+    }
+    public function specializationDelete(Request $req){
+        $id = $req->id_;
+        $specialization = specializations::find($id);
+        $specialization->delete();
+        return redirect()->route('specialization-index')->with('delete', 'Specialization Delete');
+    }
+
     public function specializationIndex()
     {
 
@@ -260,6 +305,24 @@ class AdminController extends Controller
         }
     }
 
+    public function memberDelete($id){
+        $member = members::find($id);
+        $member->delete();
+
+        return redirect()->route('members-index')->with('delete', 'Member Deleted');
+    }
+    public function memberUpdate(Request $req , $id){
+        $member = members::find($id);
+        $member->first_name = $req->first_name;
+        $member->last_name = $req->last_name;
+        $member->email = $req->email;
+        $member->address = $req->address;
+
+        $member->save();
+
+        return redirect()->route('members-index')->with('update', 'Member Updated');
+    }
+
     public function membersSearch(Request $req)
     {
 
@@ -292,7 +355,7 @@ class AdminController extends Controller
             if (Auth::User()->role == 0) {
                 $specializations = specializations::where('status', 'active')->get();
                 $trainers = trainers::join('specializations', 'specializations.id', '=', 'trainers.specialization_id')
-                    ->select('trainers.*', 'trainers.name as trainer_name', 'specializations.*', 'specializations.name as specialization')
+                    ->select('trainers.*', 'trainers.id as trainer_id', 'trainers.name as trainer_name', 'specializations.*', 'specializations.name as specialization')
                     ->get();
                 return view('admin.trainer.index', compact('specializations', 'trainers'));
             } else {
@@ -334,12 +397,12 @@ class AdminController extends Controller
         }
     }
 
-    public function getTrainer($id)
+    public function getTrainerSpec($id)
     {
 
         if (Auth::check()) {
             if (Auth::User()->role == 0) {
-                $trainers = trainers::where('specialization_id', $id)->get(['id', 'name']);
+                $trainers = trainers::where('specialization_id', $id)->get(['id', 'name', 'phone', 'email', 'salary']);
                 return response()->json($trainers);
             } else {
                 abort('403', 'You are not authorized for this page.');
@@ -347,6 +410,43 @@ class AdminController extends Controller
         } else {
             return redirect()->route('login');
         }
+    }
+
+    public function getTrainer($id)
+    {
+
+        if (Auth::check()) {
+            if (Auth::User()->role == 0) {
+                $trainers = trainers::select('id', 'name', 'salary', 'phone', 'email')->find($id);
+                return response()->json($trainers);
+            } else {
+                abort('403', 'You are not authorized for this page.');
+            }
+        } else {
+            return redirect()->route('login');
+        }
+    }
+
+    public function trainerDelete(Request $req){
+        $id = $req->id_;
+
+
+        $trainer = trainers::find($id);
+        $trainer->delete();
+
+        return redirect()->route('trainers-index')->with('delete', 'Trainer Deleted');
+    }
+    public function trainerUpdate(Request $req){
+        $id = $req->id;
+        $trainer = trainers::find($id)->first();
+        $trainer->name = $req->name_;
+        $trainer->email = $req->email_;
+        $trainer->phone = $req->phone_;
+        $trainer->salary = $req->salary_;
+
+        $trainer->save();
+
+        return redirect()->route('trainers-index')->with('update', 'Trainer Updated');
     }
 
     public function classesIndex()
